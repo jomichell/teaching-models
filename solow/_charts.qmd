@@ -1,0 +1,70 @@
+```{ojs}
+//| echo: false
+solowDiagram = Plot.plot({
+  width: 460,
+  height: 360,
+  x: {label: "k", domain: [0, kMax]},
+  y: {label: "per effective worker"},
+  color: {
+    legend: true,
+    domain: ["investment, s·f(k)", "break-even investment"],
+    range: [colours.investment, colours.breakEven]
+  },
+  marks: [
+    Plot.ruleY([0]),
+    Plot.ruleX([kStar], {strokeDasharray: "3,3", strokeOpacity: 0.6}),
+    // The investment curve in force now, and the other regime's curve dashed.
+    hasShock ? Plot.line(grid, {x: "k", y: shocked ? "investmentBefore" : "investmentAfter", stroke: colours.investment, strokeDasharray: "4,3", strokeOpacity: 0.5}) : null,
+    Plot.line(grid, {x: "k", y: shocked ? "investmentAfter" : "investmentBefore", stroke: () => "investment, s·f(k)"}),
+    Plot.line(grid, {x: "k", y: "breakEven", stroke: () => "break-even investment"}),
+    // Current capital stock, and the gap between the curves that drives it.
+    Plot.ruleX([now.k], {y1: 0, y2: Math.min(investmentNow, breakEvenNow), strokeOpacity: 0.4}),
+    Plot.ruleX([now.k], {y1: breakEvenNow, y2: investmentNow, stroke: colours.gap, strokeWidth: 3}),
+    Plot.dot([now], {x: "k", y: investmentNow, fill: colours.investment, r: 4}),
+    Plot.dot([now], {x: "k", y: breakEvenNow, fill: colours.breakEven, r: 4}),
+    Plot.dot([now], {x: "k", y: 0, fill: "currentColor", r: 5})
+  ]
+})
+
+// Time series of one variable: the full path faintly, the part travelled so far
+// in bold, and a marker at the current period.
+// On a log scale the axis starts at the smallest value rather than zero.
+// `rules` are dashed horizontal reference lines, [{x1, x2, y}, ...].
+// `key` is a column of `path`, or a function of a row.
+function timePlot(key, {label = key, rules = [], log = false, max} = {}) {
+  const value = typeof key === "function" ? key : d => d[key]
+  if (max === undefined) max = d3.max(path, value)
+  const min = log ? d3.min(path, value) : Math.min(0, d3.min(path, value))
+  return Plot.plot({
+    width: 460,
+    height: 360,
+    x: {label: "t", domain: [0, periods]},
+    y: {label: log ? `${label} (log scale)` : label, type: log ? "log" : "linear", domain: [min, max]},
+    marks: [
+      Plot.ruleY([log ? min : 0]),
+      Plot.ruleY(rules, {x1: "x1", x2: "x2", y: "y", strokeDasharray: "3,3", strokeOpacity: 0.6}),
+      hasShock ? Plot.ruleX([shockT], {strokeDasharray: "1,3", strokeOpacity: 0.6}) : null,
+      Plot.line(path, {x: "t", y: value, strokeOpacity: 0.2}),
+      Plot.line(path.slice(0, t + 1), {x: "t", y: value, strokeWidth: 2}),
+      Plot.dot([now], {x: "t", y: value, fill: "currentColor", r: 5})
+    ]
+  })
+}
+
+kStarRules = [
+  {x1: 0, x2: shockT, y: kStarBefore},
+  {x1: shockT, x2: periods, y: kStarAfter}
+]
+
+// In steady state GDP per capita grows at the rate of technology, g.
+growthRules = [{x1: 0, x2: periods, y: 100 * g}]
+
+html`<div class="sim-grid">
+  <div><strong>Solow diagram</strong>${solowDiagram}</div>
+  <div><strong>Transition path: capital per effective worker, k</strong>${timePlot("k", {max: kMax, rules: kStarRules})}</div>
+  <div><strong>GDP per capita, Y / L</strong>${timePlot("yPerCapita", {label: "Y / L", log: logScale})}</div>
+  <div><strong>Labour force, L</strong>${timePlot("L", {log: logScale})}</div>
+  <div><strong>Capital stock, K</strong>${timePlot("K", {log: logScale})}</div>
+  <div><strong>Growth of GDP per capita, % per period</strong>${timePlot(d => 100 * d.yPerCapitaGrowth, {label: "%", rules: growthRules})}</div>
+</div>`
+```

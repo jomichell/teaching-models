@@ -1,0 +1,12 @@
+---
+title: "Teaching models"
+toc: false
+---
+
+Simulation models for teaching economics, with interactive pages to explore
+them. The code behind each model is in the repository.
+
+## Models
+
+- [Solow growth model](solow/index.qmd)
+- [Solow growth model: an investment rate shock](solow/shock.qmd)

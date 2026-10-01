@@ -1,0 +1,27 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - "**/*.qmd"
+    - "!.venv/"
+
+website:
+  title: "Teaching models"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - text: Models
+        menu:
+          - href: solow/index.qmd
+            text: Solow growth model
+          - href: solow/shock.qmd
+            text: "Solow model: investment rate shock"
+
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    toc: true
+    css: styles.css

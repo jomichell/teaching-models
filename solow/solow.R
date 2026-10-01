@@ -1,0 +1,51 @@
+# Solow growth model with Cobb-Douglas technology, in discrete time.
+# k is capital per effective worker; output per effective worker is y = k^alpha.
+#
+# Run as a script to plot the transition path:  Rscript solow/solow.R
+
+solow_params <- function(s = 0.25,      # investment rate (the textbook "saving rate")
+                         alpha = 0.33,  # capital share
+                         delta = 0.05,  # depreciation rate
+                         n = 0.01,      # population growth
+                         g = 0.02) {    # technology growth
+  list(s = s, alpha = alpha, delta = delta, n = n, g = g)
+}
+
+output <- function(k, p) k^p$alpha
+
+# Investment per effective worker needed to keep k constant.
+break_even <- function(k, p) (p$delta + p$n + p$g + p$n * p$g) * k
+
+steady_state <- function(p) {
+  (p$s / (p$delta + p$n + p$g + p$n * p$g))^(1 / (1 - p$alpha))
+}
+
+step <- function(k, p) {
+  (p$s * output(k, p) + (1 - p$delta) * k) / ((1 + p$n) * (1 + p$g))
+}
+
+# Returns a data frame with columns t, k, y, c, i for t = 0..periods.
+simulate <- function(k0, p = solow_params(), periods = 100) {
+  k <- numeric(periods + 1)
+  k[1] <- k0
+  for (t in seq_len(periods)) k[t + 1] <- step(k[t], p)
+  y <- output(k, p)
+  data.frame(t = 0:periods, k = k, y = y, c = (1 - p$s) * y, i = p$s * y)
+}
+
+if (sys.nframe() == 0) {
+  library(ggplot2)
+
+  p <- solow_params()
+  k_star <- steady_state(p)
+  path <- simulate(k0 = 0.1 * k_star, p = p)
+
+  plot <- ggplot(path, aes(t, k)) +
+    geom_line() +
+    geom_hline(yintercept = k_star, linetype = "dotted", colour = "grey40") +
+    labs(title = "Solow model: transition path", x = "t", y = "k") +
+    theme_minimal()
+
+  ggsave("solow/solow_transition.png", plot, width = 6, height = 4)
+  message("Saved solow/solow_transition.png")
+}

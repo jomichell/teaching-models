@@ -1,0 +1,12 @@
+[project]
+name = "teaching-models"
+version = "0.1.0"
+description = "Simulation models for teaching economics"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy",
+    "matplotlib",
+]
+
+[tool.uv]
+package = false

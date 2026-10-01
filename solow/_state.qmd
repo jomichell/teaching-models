@@ -1,0 +1,37 @@
+```{ojs}
+//| echo: false
+viewof t = scrubber(periods)
+```
+
+```{ojs}
+//| echo: false
+p = ({s, alpha, delta, n, g})
+pShock = ({...p, s: sShock})
+hasShock = sShock !== s
+path = simulate(k0, p, periods, {shock: {t: shockT, params: {s: sShock}}})
+
+// Steady states before and after the shock.
+kStarBefore = steadyState(p)
+kStarAfter = steadyState(pShock)
+kMax = 1.5 * Math.max(kStarBefore, kStarAfter, k0)
+grid = d3.range(0, kMax * 1.0001, kMax / 200).map(k => ({
+  k,
+  investmentBefore: s * output(k, p),
+  investmentAfter: sShock * output(k, p),
+  breakEven: breakEven(k, p)
+}))
+
+// State of the economy at the current point in the animation.
+now = path[t]
+shocked = t >= shockT
+kStar = shocked ? kStarAfter : kStarBefore
+investmentNow = now.s * output(now.k, p)
+breakEvenNow = breakEven(now.k, p)
+
+colours = ({investment: "#4269d0", breakEven: "#ff725c", gap: "#3ca951"})
+```
+
+$k_t =$ ${now.k.toFixed(2)},
+investment $=$ ${investmentNow.toFixed(3)},
+break-even investment $=$ ${breakEvenNow.toFixed(3)}.
+Steady state: $k^* =$ ${kStar.toFixed(2)}.

@@ -1,0 +1,40 @@
+/* Interactive model pages: controls beside the output on wide screens,
+   stacked above it on narrow ones. */
+.sim-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+}
+
+@media (min-width: 1200px) {
+  .sim-layout {
+    grid-template-columns: 380px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  /* Keep the controls in view while scrolling through the output. */
+  .sim-controls {
+    position: sticky;
+    top: 5rem;
+  }
+}
+
+/* Grid of charts: one, two or three columns depending on the space available. */
+.sim-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: end;
+}
+
+@media (min-width: 700px) {
+  .sim-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1500px) {
+  .sim-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

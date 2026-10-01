@@ -1,0 +1,40 @@
+---
+title: "Solow growth model: an investment rate shock"
+page-layout: full
+toc: false
+---
+
+This is the [Solow growth model](index.qmd) with a permanent change in the
+investment rate, $s$, partway through the simulation.^[Textbooks usually call $s$ the *saving rate*; see the note on the [main page](index.qmd).]
+
+Press play, or drag the time slider, to follow the economy from its initial
+capital stock $k_0$. When the shock arrives, the investment curve shifts and the
+economy heads for a new steady state; the old curve stays on the diagram as a
+dashed line for comparison. In the charts over time, a dotted vertical line marks
+the shock, and the steady-state level of $k$ steps to its new value.
+
+::: {.sim-layout .column-screen-inset}
+
+::: {.sim-controls}
+
+{{< include _controls.qmd >}}
+
+```{ojs}
+//| echo: false
+viewof sShock = Inputs.range([0.01, 0.6], {value: 0.35, step: 0.01, label: "Investment rate after shock"})
+viewof shockT = Inputs.range([1, periods - 1], {value: periods / 2, step: 1, label: "Shock period"})
+```
+
+{{< include _state.qmd >}}
+
+Investment rate in force: ${now.s.toFixed(2)}.
+
+:::
+
+::: {.sim-output}
+
+{{< include _charts.qmd >}}
+
+:::
+
+:::

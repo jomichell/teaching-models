@@ -1,0 +1,64 @@
+---
+title: "Solow growth model"
+page-layout: full
+toc: false
+---
+
+## The model
+
+Output is produced with a Cobb-Douglas technology, $Y = K^\alpha (AL)^{1-\alpha}$.
+Labour grows at rate $n$, technology at rate $g$, capital depreciates at rate
+$\delta$ and a constant fraction $s$ of output, the investment rate, is devoted to
+capital accumulation.^[Textbook presentations usually call $s$ the *saving rate* and the curve $s f(k)$ *saving*. Here they are called the *investment rate* and *investment*, because what matters in the model is the proportion of output devoted to capital accumulation. The symbol $s$ is kept so that the notation matches the textbooks.]
+
+In terms of capital per effective worker, $k = K / AL$, output is $y = k^\alpha$ and
+capital evolves according to
+
+$$
+k_{t+1} = \frac{s k_t^\alpha + (1 - \delta) k_t}{(1 + n)(1 + g)} .
+$$
+
+The steady state is
+
+$$
+k^* = \left( \frac{s}{\delta + n + g + ng} \right)^{\frac{1}{1 - \alpha}} .
+$$
+
+## Simulation
+
+Press play, or drag the time slider, to follow the economy from its initial
+capital stock $k_0$. The top row shows the same $k_t$ in both charts: on the left,
+the gap between investment and break-even investment is what moves $k$; on the right,
+that movement is traced out over time. The remaining charts show GDP per capita,
+$Y / L = A k^\alpha$, and the levels of the capital stock, $K = k A L$, and the
+labour force, $L$, with $A_0 = L_0 = 1$. These keep growing after $k$ has settled
+at its steady state: GDP per capita then grows at the rate of technology, $g$,
+shown as a dashed line on the growth chart. On a log scale, constant growth
+appears as a straight line.
+
+See also the version with a [shock to the investment rate](shock.qmd).
+
+::: {.sim-layout .column-screen-inset}
+
+::: {.sim-controls}
+
+{{< include _controls.qmd >}}
+
+```{ojs}
+//| echo: false
+// No shock on this page: the investment rate stays at s throughout.
+sShock = s
+shockT = 0
+```
+
+{{< include _state.qmd >}}
+
+:::
+
+::: {.sim-output}
+
+{{< include _charts.qmd >}}
+
+:::
+
+:::

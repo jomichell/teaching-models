@@ -1,0 +1,28 @@
+# Quarto
+/_site/
+/.quarto/
+*_files/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# R
+.Rhistory
+.RData
+.Rproj.user/
+Rplots.pdf
+
+# JavaScript
+node_modules/
+
+# Generated figures
+*.png
+*.pdf
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
