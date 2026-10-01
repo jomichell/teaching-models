@@ -3,6 +3,9 @@
 Simulation models for teaching economics, implemented in Python, R and
 JavaScript, with interactive pages built as a [Quarto](https://quarto.org) website.
 
+The site is published at <https://jomichell.github.io/teaching-models/>. It is
+rebuilt and deployed by GitHub Actions on every push to `main`.
+
 ## Layout
 
 ```

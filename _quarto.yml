@@ -7,6 +7,8 @@ project:
 
 website:
   title: "Teaching models"
+  site-url: https://jomichell.github.io/teaching-models/
+  repo-url: https://github.com/jomichell/teaching-models
   navbar:
     left:
       - href: index.qmd
