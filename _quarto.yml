@@ -19,6 +19,10 @@ website:
             text: Solow growth model
           - href: solow/shock.qmd
             text: "Solow model: investment rate shock"
+    right:
+      - icon: github
+        href: https://github.com/jomichell/teaching-models
+        aria-label: Source code on GitHub
 
 format:
   html:

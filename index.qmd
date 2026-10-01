@@ -4,7 +4,8 @@ toc: false
 ---
 
 Simulation models for teaching economics, with interactive pages to explore
-them. The code behind each model is in the repository.
+them. The code behind each model is in the
+[GitHub repository](https://github.com/jomichell/teaching-models).
 
 ## Models
 
