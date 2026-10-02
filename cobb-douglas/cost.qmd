@@ -1,0 +1,135 @@
+---
+title: "Cobb-Douglas: cost minimisation and factor shares"
+page-layout: full
+toc: false
+---
+
+{{< include _sequence.qmd >}}
+
+This page takes the [isoquants](index.qmd) of the Cobb-Douglas production
+function, $q = A L^a K^b$, and asks how a firm would choose to produce a given
+quantity $q$ if each unit of labour costs $w$ and each unit of capital costs $r$.
+
+An isocost line shows all the combinations of labour and capital with the same
+total cost, $C = wL + rK$. It is a straight line with slope $-w/r$, and lines
+further from the origin cost more. The cheapest way to produce $q$ is the point
+on its isoquant that touches the lowest possible isocost line. There the two
+have the same slope, which for a Cobb-Douglas function means
+
+$$
+\frac{K}{L} = \frac{b}{a} \cdot \frac{w}{r} .
+$$
+
+So when labour becomes more expensive relative to capital, the firm uses more
+capital per worker. The shares of total cost going to each input, however, do not
+change: labour always receives $a / (a + b)$ of the total and capital
+$b / (a + b)$, whatever the prices. With constant returns to scale these are
+simply $a$ and $1 - a$. The bar under the chart shows the two shares: change $w$
+or $r$ and the chosen point moves, but the split stays the same; change $a$ or
+$b$ and the split moves.
+
+::: {.sim-layout}
+
+::: {.sim-controls}
+
+{{< include _controls.qmd >}}
+
+```{ojs}
+//| echo: false
+viewof q = Inputs.range([1, 10], {value: 4, step: 0.5, label: "Output to produce, q"})
+viewof w = Inputs.range([0.5, 3], {value: 1, step: 0.1, label: "Cost of labour, w"})
+viewof r = Inputs.range([0.5, 3], {value: 1, step: 0.1, label: "Cost of capital, r"})
+```
+
+```{ojs}
+//| echo: false
+best = minimiseCost(q, p, w, r)
+
+// Both axes run from 0 to max: 10, or further if the chosen point needs it.
+max = Math.max(10, 1.25 * Math.max(best.L, best.K))
+
+isoquants = levels.flatMap(level => isoquant(level, p, max))
+target = isoquant(q, p, max)
+
+// Isocost lines at half, exactly, and one and a half times the minimum cost.
+isocosts = [0.5, 1, 1.5].map(m => ({
+  minimum: m === 1,
+  ends: [{L: 0, K: m * best.cost / r}, {L: m * best.cost / w, K: 0}]
+}))
+
+shares = [
+  {factor: "Labour", cost: best.labourCost, share: best.labourCost / best.cost},
+  {factor: "Capital", cost: best.capitalCost, share: best.capitalCost / best.cost}
+]
+
+colours = ({isoquant: "#4269d0", isocost: "#ff725c", labour: "#3ca951", capital: "#efb118"})
+```
+
+$a + b =$ ${scale.toFixed(2)}: ${returns} returns to scale. ${bNote}
+
+```{ojs}
+//| echo: false
+html`<p>Cheapest way to produce <em>q</em> = ${q}: <em>L</em> = ${best.L.toFixed(2)},
+<em>K</em> = ${best.K.toFixed(2)}, so <em>K</em> / <em>L</em> = ${(best.K / best.L).toFixed(2)}.</p>
+<p>Total cost = ${best.cost.toFixed(2)}: labour ${best.labourCost.toFixed(2)}
+(${(100 * shares[0].share).toFixed(0)}%), capital ${best.capitalCost.toFixed(2)}
+(${(100 * shares[1].share).toFixed(0)}%).</p>`
+```
+
+:::
+
+::: {.sim-output}
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width: 560,
+  height: 560,
+  x: {label: "Labour, L", domain: [0, max], ticks: 5},
+  y: {label: "Capital, K", domain: [0, max], ticks: 5},
+  color: {
+    legend: true,
+    domain: [`isoquant, q = ${q}`, "isocost lines"],
+    range: [colours.isoquant, colours.isocost]
+  },
+  marks: [
+    Plot.ruleX([0]),
+    Plot.ruleY([0]),
+    Plot.line(isoquants, {x: "L", y: "K", z: "q", stroke: colours.isoquant, strokeOpacity: 0.2, clip: true}),
+    // Isocost lines: the minimum-cost one solid, the others dashed.
+    isocosts.map(line => Plot.line(line.ends, {
+      x: "L", y: "K", stroke: () => "isocost lines", clip: true,
+      strokeWidth: line.minimum ? 2 : 1, strokeDasharray: line.minimum ? null : "4,3"
+    })),
+    Plot.line(target, {x: "L", y: "K", stroke: () => `isoquant, q = ${q}`, strokeWidth: 2, clip: true}),
+    // The cost-minimising point, with the amounts of labour and capital it uses.
+    Plot.ruleX([best], {x: "L", y1: 0, y2: "K", stroke: colours.labour, strokeDasharray: "3,3"}),
+    Plot.ruleY([best], {y: "K", x1: 0, x2: "L", stroke: colours.capital, strokeDasharray: "3,3"}),
+    Plot.dot([best], {x: "L", y: "K", fill: "currentColor", r: 5}),
+    Plot.text([best], {x: "L", y: "K", text: () => "lowest cost", textAnchor: "start", dx: 9, dy: -9})
+  ]
+})
+```
+
+**Shares of total cost**
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width: 560,
+  height: 70,
+  marginLeft: 40,
+  x: {label: "share of total cost, %", domain: [0, 100]},
+  marks: [
+    Plot.barX(shares, Plot.stackX({x: d => 100 * d.share, fill: d => colours[d.factor.toLowerCase()]})),
+    Plot.text(shares, Plot.stackX({
+      x: d => 100 * d.share,
+      text: d => `${d.factor} ${(100 * d.share).toFixed(0)}%`
+    }))
+  ]
+})
+```
+
+:::
+
+:::

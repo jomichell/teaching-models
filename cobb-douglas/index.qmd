@@ -4,6 +4,8 @@ page-layout: full
 toc: false
 ---
 
+{{< include _sequence.qmd >}}
+
 A Cobb-Douglas production function gives output $q$ from labour $L$ and capital $K$:
 
 $$
@@ -16,42 +18,30 @@ $q = 2, 4, 6, \ldots$, so you can see how they move as the parameters change.
 Raising $A$ shifts every isoquant in towards the origin: the same output needs
 fewer inputs. The exponents $a$ and $b$ set how productive each input is, which
 changes the slope of the isoquants, and their sum determines returns to scale.
+Switch on constant returns to scale to set $b = 1 - a$, so that
+$q = A L^a K^{1-a}$.
+
+The [next page](cost.qmd) adds the costs of labour and capital, and finds the
+cheapest way to produce a given quantity.
 
 ::: {.sim-layout}
 
 ::: {.sim-controls}
 
-```{ojs}
-//| echo: false
-viewof A = Inputs.range([0.5, 3], {value: 1, step: 0.1, label: "Productivity, A"})
-viewof a = Inputs.range([0.1, 1], {value: 0.5, step: 0.05, label: "Labour exponent, a"})
-viewof b = Inputs.range([0.1, 1], {value: 0.5, step: 0.05, label: "Capital exponent, b"})
-```
+{{< include _controls.qmd >}}
 
 ```{ojs}
 //| echo: false
 max = 10                       // both axes run from 0 to max
-levels = d3.range(2, 42, 2)    // output quantities with an isoquant drawn
-
-// Capital needed to produce q with labour L.
-function capitalFor(q, L) {
-  return (q / (A * L ** a)) ** (1 / b)
-}
-
-isoquants = levels.flatMap(q =>
-  d3.range(0.02, max + 0.01, 0.02).map(L => ({q, L, K: capitalFor(q, L)}))
-)
+isoquants = levels.flatMap(q => isoquant(q, p, max))
 
 // Label each isoquant just above where it crosses the 45-degree line, K = L.
 labels = levels
   .map(q => ({q, x: (q / A) ** (1 / (a + b))}))
   .filter(d => d.x < max * 0.93)
-
-scale = a + b
-returns = Math.abs(scale - 1) < 1e-9 ? "constant" : scale > 1 ? "increasing" : "decreasing"
 ```
 
-$a + b =$ ${scale.toFixed(2)}: ${returns} returns to scale.
+$a + b =$ ${scale.toFixed(2)}: ${returns} returns to scale. ${bNote}
 
 :::
 

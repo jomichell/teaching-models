@@ -1,0 +1,32 @@
+```{ojs}
+//| echo: false
+import { isoquant, minimiseCost } from "./cobb-douglas.js"
+
+viewof A = Inputs.range([0.5, 3], {value: 1, step: 0.1, label: "Productivity, A"})
+viewof crs = Inputs.toggle({label: "Constant returns to scale"})
+viewof a = Inputs.range([0.1, 1], {value: 0.5, step: 0.05, label: "Labour exponent, a"})
+viewof bFree = Inputs.range([0.1, 1], {value: 0.5, step: 0.05, label: "Capital exponent, b"})
+```
+
+```{ojs}
+//| echo: false
+b = crs ? 1 - a : bFree
+bNote = crs ? `b = 1 − a = ${b.toFixed(2)}.` : ""
+p = ({A, a, b})
+
+// With constant returns, hide the slider for b and stop a at 0.9, to keep b above 0.
+constrain = {
+  const aMax = crs ? 0.9 : 1
+  viewof bFree.style.display = crs ? "none" : ""
+  viewof a.querySelectorAll("input").forEach(input => input.max = aMax)
+  if (a > aMax) {
+    viewof a.value = aMax
+    viewof a.dispatchEvent(new Event("input", {bubbles: true}))
+  }
+}
+
+levels = d3.range(2, 42, 2)    // output quantities with an isoquant drawn
+
+scale = a + b
+returns = Math.abs(scale - 1) < 1e-9 ? "constant" : scale > 1 ? "increasing" : "decreasing"
+```

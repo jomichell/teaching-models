@@ -1,0 +1,5 @@
+::: {.callout-note appearance="minimal"}
+The Cobb-Douglas production function in two steps:
+[1. isoquants](index.qmd) ·
+[2. cost minimisation and factor shares](cost.qmd)
+:::
