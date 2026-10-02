@@ -14,6 +14,7 @@ index.qmd        site home page
 styles.css       shared page styles (e.g. the controls-beside-output layout)
 pyproject.toml   Python dependencies (managed with uv)
 js/              JavaScript helpers shared between pages (e.g. the play/pause scrubber)
+cobb-douglas/    isoquants of a Cobb-Douglas production function (one page)
 solow/           one directory per model
   index.qmd      interactive page (Observable JS)
   shock.qmd      the same page with a shock to the investment rate

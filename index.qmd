@@ -11,3 +11,4 @@ them. The code behind each model is in the
 
 - [Solow growth model](solow/index.qmd)
 - [Solow growth model: an investment rate shock](solow/shock.qmd)
+- [Cobb-Douglas production function: isoquants](cobb-douglas/index.qmd)

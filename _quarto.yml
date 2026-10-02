@@ -19,6 +19,8 @@ website:
             text: Solow growth model
           - href: solow/shock.qmd
             text: "Solow model: investment rate shock"
+          - href: cobb-douglas/index.qmd
+            text: Cobb-Douglas isoquants
     right:
       - icon: github
         href: https://github.com/jomichell/teaching-models
