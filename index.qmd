@@ -9,6 +9,9 @@ them. The code behind each model is in the
 
 ## Models
 
-- [Solow growth model](solow/index.qmd)
-- [Solow growth model: an investment rate shock](solow/shock.qmd)
 - [Cobb-Douglas production function: isoquants](cobb-douglas/index.qmd)
+- Solow growth model, in four steps:
+  1. [constant technology](solow/index.qmd)
+  2. [constant technology, with an investment rate shock](solow/shock.qmd)
+  3. [growing technology and effective labour](solow/effective.qmd)
+  4. [growing technology, with an investment rate shock](solow/effective-shock.qmd)

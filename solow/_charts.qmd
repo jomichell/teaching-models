@@ -4,7 +4,7 @@ solowDiagram = Plot.plot({
   width: 460,
   height: 360,
   x: {label: "k", domain: [0, kMax]},
-  y: {label: "per effective worker"},
+  y: {label: perWorker},
   color: {
     legend: true,
     domain: ["investment, s·f(k)", "break-even investment"],
@@ -56,12 +56,13 @@ kStarRules = [
   {x1: shockT, x2: periods, y: kStarAfter}
 ]
 
-// In steady state GDP per capita grows at the rate of technology, g.
+// In steady state GDP per capita grows at the rate of technology, g (zero if
+// technology is constant).
 growthRules = [{x1: 0, x2: periods, y: 100 * g}]
 
 html`<div class="sim-grid">
   <div><strong>Solow diagram</strong>${solowDiagram}</div>
-  <div><strong>Transition path: capital per effective worker, k</strong>${timePlot("k", {max: kMax, rules: kStarRules})}</div>
+  <div><strong>Transition path: capital ${perWorker}, k</strong>${timePlot("k", {max: kMax, rules: kStarRules})}</div>
   <div><strong>GDP per capita, Y / L</strong>${timePlot("yPerCapita", {label: "Y / L", log: logScale})}</div>
   <div><strong>Labour force, L</strong>${timePlot("L", {log: logScale})}</div>
   <div><strong>Capital stock, K</strong>${timePlot("K", {log: logScale})}</div>

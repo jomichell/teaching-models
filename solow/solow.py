@@ -1,6 +1,11 @@
-"""Solow growth model with Cobb-Douglas technology, in discrete time.
+"""Solow growth model with Cobb-Douglas technology, in discrete time:
 
-k is capital per effective worker; output per effective worker is y = k^alpha.
+    Y = A K^alpha (E L)^(1 - alpha)
+
+A is a constant level of productivity and E is the efficiency of labour, which
+grows at rate g. k is capital per effective worker, K / (E L); output per
+effective worker is y = A k^alpha. With g = 0 this is the model with constant
+technology, and k is capital per worker.
 
 Run as a script to plot the transition path:  uv run solow/solow.py
 """
@@ -16,11 +21,12 @@ class Params:
     alpha: float = 0.33  # capital share
     delta: float = 0.05  # depreciation rate
     n: float = 0.01  # population growth
-    g: float = 0.02  # technology growth
+    g: float = 0.02  # growth of labour efficiency
+    A: float = 1.0  # constant level of productivity
 
 
 def output(k, p: Params):
-    return k**p.alpha
+    return p.A * k**p.alpha
 
 
 def break_even(k, p: Params):
@@ -29,7 +35,7 @@ def break_even(k, p: Params):
 
 
 def steady_state(p: Params) -> float:
-    return (p.s / (p.delta + p.n + p.g + p.n * p.g)) ** (1 / (1 - p.alpha))
+    return (p.s * p.A / (p.delta + p.n + p.g + p.n * p.g)) ** (1 / (1 - p.alpha))
 
 
 def step(k, p: Params):

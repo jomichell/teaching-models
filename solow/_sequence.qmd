@@ -1,0 +1,7 @@
+::: {.callout-note appearance="minimal"}
+The Solow model in four steps:
+[1. constant technology](index.qmd) ·
+[2. with an investment rate shock](shock.qmd) ·
+[3. growing technology and effective labour](effective.qmd) ·
+[4. with an investment rate shock](effective-shock.qmd)
+:::

@@ -16,9 +16,11 @@ pyproject.toml   Python dependencies (managed with uv)
 js/              JavaScript helpers shared between pages (e.g. the play/pause scrubber)
 cobb-douglas/    isoquants of a Cobb-Douglas production function (one page)
 solow/           one directory per model
-  index.qmd      interactive page (Observable JS)
+  index.qmd      interactive page (Observable JS): constant technology
   shock.qmd      the same page with a shock to the investment rate
-  _*.qmd         controls, state and charts shared by the two pages
+  effective.qmd  technology growing as the efficiency of labour
+  effective-shock.qmd   the same page with a shock to the investment rate
+  _*.qmd         controls, state and charts shared by the four pages
   solow.js       JavaScript implementation, imported by the page
   solow.py       Python implementation
   solow.R        R implementation

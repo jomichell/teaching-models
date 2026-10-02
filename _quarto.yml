@@ -15,12 +15,16 @@ website:
         text: Home
       - text: Models
         menu:
-          - href: solow/index.qmd
-            text: Solow growth model
-          - href: solow/shock.qmd
-            text: "Solow model: investment rate shock"
           - href: cobb-douglas/index.qmd
             text: Cobb-Douglas isoquants
+          - href: solow/index.qmd
+            text: "Solow 1: constant technology"
+          - href: solow/shock.qmd
+            text: "Solow 2: investment rate shock"
+          - href: solow/effective.qmd
+            text: "Solow 3: growing technology"
+          - href: solow/effective-shock.qmd
+            text: "Solow 4: growing technology, investment rate shock"
     right:
       - icon: github
         href: https://github.com/jomichell/teaching-models

@@ -5,7 +5,7 @@ viewof t = scrubber(periods)
 
 ```{ojs}
 //| echo: false
-p = ({s, alpha, delta, n, g})
+p = ({s, alpha, delta, n, g, A})
 pShock = ({...p, s: sShock})
 hasShock = sShock !== s
 path = simulate(k0, p, periods, {shock: {t: shockT, params: {s: sShock}}})
