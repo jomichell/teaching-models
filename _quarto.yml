@@ -21,6 +21,8 @@ website:
             text: "Cobb-Douglas 2: cost minimisation and factor shares"
           - href: ces/index.qmd
             text: CES production and weak links
+          - href: ces/shares.qmd
+            text: CES production and factor shares
           - href: markup/index.qmd
             text: Markups and the wage share
           - href: solow/index.qmd

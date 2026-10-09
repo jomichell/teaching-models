@@ -14,6 +14,7 @@ them. The code behind each model is in the
   2. [cost minimisation and factor shares](cobb-douglas/cost.qmd)
 - [CES production and weak links](ces/index.qmd), following Jones (2026),
   *AI and Our Economic Future*
+- [CES production, the elasticity of substitution and factor shares](ces/shares.qmd)
 - [Markups and the wage share](markup/index.qmd)
 - Solow growth model, in four steps:
   1. [constant technology](solow/index.qmd)

@@ -33,3 +33,25 @@ export function isoquant(y, f, limit, points = 800) {
   }
   return out;
 }
+
+// CES with capital and labour, as in the ETP lecture 2 slides:
+//   Y = (alpha K^rho + (1 - alpha) L^rho)^(1 / rho).
+// sigma = 1 is the Cobb-Douglas limit, K^alpha L^(1 - alpha).
+export function cesKL(K, L, sigma, alpha) {
+  const rho = (sigma - 1) / sigma;
+  if (Math.abs(rho) < 1e-6) return K ** alpha * L ** (1 - alpha);
+  if (rho < 0 && (K === 0 || L === 0)) return 0;
+  return (alpha * K ** rho + (1 - alpha) * L ** rho) ** (1 / rho);
+}
+
+// Cost-minimising choice when capital costs r and labour costs w, given only
+// through the relative price of capital, r / w. With constant returns and
+// competitive markets, the shares of cost are also the shares of income.
+// Returns the capital-labour ratio, spending on capital relative to labour, the
+// labour share, and the inputs that produce one unit of output.
+export function factorChoice(sigma, alpha, priceRatio) {
+  const kl = ((alpha / (1 - alpha)) / priceRatio) ** sigma;
+  const spending = priceRatio * kl;
+  const L = 1 / cesKL(kl, 1, sigma, alpha);
+  return { kl, spending, labourShare: 1 / (1 + spending), L, K: kl * L };
+}

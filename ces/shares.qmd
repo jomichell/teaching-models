@@ -1,0 +1,175 @@
+---
+title: "CES production, the elasticity of substitution and factor shares"
+page-layout: full
+toc: false
+---
+
+The price of investment goods, especially computers, has fallen relative to
+wages. Firms respond by using more capital per worker. Whether this lowers the
+labour share depends on how easily capital replaces labour: the *elasticity of
+substitution*, $\sigma$.
+
+A CES (constant elasticity of substitution) production function with capital
+$K$ and labour $L$ is
+
+$$
+Y = \left( \alpha K^{\rho} + (1 - \alpha) L^{\rho} \right)^{1/\rho},
+\qquad \sigma = \frac{1}{1 - \rho} .
+$$
+
+With $\sigma = 1$ it becomes Cobb-Douglas, $Y = K^\alpha L^{1-\alpha}$. Lower
+values of $\sigma$ bend the isoquants more sharply (complements); higher values
+straighten them (substitutes).
+
+Suppose firms pay a wage $w$ and a rental price of capital $r$, and choose the
+cheapest mix of inputs. Then
+
+$$
+\frac{K}{L} = \left( \frac{\alpha}{1 - \alpha} \cdot \frac{w}{r} \right)^{\sigma}
+\qquad \text{and} \qquad
+\frac{rK}{wL} = \left( \frac{\alpha}{1 - \alpha} \right)^{\sigma}
+\left( \frac{r}{w} \right)^{1 - \sigma} .
+$$
+
+So $\sigma$ is the percentage change in the capital-labour ratio for a 1% change
+in relative prices. If capital becomes 10% cheaper, firms raise capital per
+worker by roughly $\sigma \times 10\%$, while each unit of capital costs 10%
+less. Spending on capital relative to labour therefore rises if $\sigma > 1$
+and falls if $\sigma < 1$. With competitive markets and constant returns to
+scale, spending shares are income shares, so the labour share is
+
+$$
+\frac{wL}{wL + rK} = \frac{1}{1 + rK / wL} .
+$$
+
+- $\sigma > 1$, like supermarket tills and self-checkouts: cheaper capital
+  *lowers* the labour share.
+- $\sigma = 1$, Cobb-Douglas: the labour share stays at $1 - \alpha$ whatever
+  happens to prices.
+- $\sigma < 1$, like a delivery lorry and its driver: cheaper capital *raises*
+  the labour share.
+
+Move the price of capital and watch the labour share. Press **Pin** to keep the
+current position for comparison. The [weak-links page](index.qmd) uses the same
+kind of function for Jones's model of AI and automation.
+
+::: {.sim-layout .column-screen-inset}
+
+::: {.sim-controls}
+
+```{ojs}
+//| echo: false
+import { cesKL, factorChoice, isoquant } from "./ces.js"
+
+viewof sigma = Inputs.range([0.1, 5], {value: 0.5, transform: Math.log, step: 0.01, label: "Elasticity of substitution, σ"})
+viewof alpha = Inputs.range([0.1, 0.9], {value: 0.33, step: 0.01, label: "Capital weight, α"})
+viewof priceRatio = Inputs.range([0.25, 4], {value: 1, transform: Math.log, step: 0.01, label: "Price of capital relative to wage, r/w"})
+```
+
+```{ojs}
+//| echo: false
+// The current choice, with the settings that produced it.
+now = ({sigma, alpha, priceRatio, ...factorChoice(sigma, alpha, priceRatio)})
+
+// The same economy after a 10% fall in the price of capital, as in the lecture.
+cheaper = factorChoice(sigma, alpha, 0.9 * priceRatio)
+
+mutable pinned = null
+```
+
+```{ojs}
+//| echo: false
+html`<p>${Object.assign(html`<button class="btn btn-sm btn-outline-primary">Pin</button>`, {onclick: () => { mutable pinned = now }})}
+${Object.assign(html`<button class="btn btn-sm btn-outline-secondary">Clear</button>`, {onclick: () => { mutable pinned = null }})}</p>`
+```
+
+```{ojs}
+//| echo: false
+pct = x => `${(100 * x).toFixed(1)}%`
+change = x => `${x >= 0 ? "+" : "−"}${Math.abs(100 * x).toFixed(1)}%`
+row = (label, key, format = x => x.toFixed(2)) => html`<tr><td>${label}</td>
+  <td style="text-align:right">${format(now[key])}</td>
+  ${pinned ? html`<td style="text-align:right; opacity:0.6">${format(pinned[key])}</td>` : ""}</tr>`
+
+html`<table class="table table-sm" style="font-size: 0.9em">
+  <thead><tr><th></th><th style="text-align:right">now</th>${pinned ? html`<th style="text-align:right; opacity:0.6">pinned</th>` : ""}</tr></thead>
+  <tbody>
+    ${row("σ", "sigma")}
+    ${row("Price of capital, r/w", "priceRatio")}
+    ${row("Capital per worker, K/L", "kl")}
+    ${row("Spending on capital / labour, rK/wL", "spending")}
+    ${row("Labour share", "labourShare", pct)}
+  </tbody>
+</table>
+<p style="font-size: 0.9em"><strong>If capital became 10% cheaper:</strong>
+capital per worker ${change(cheaper.kl / now.kl - 1)} (approximately σ × 10% = ${(10 * sigma).toFixed(1)}%),
+spending on capital relative to labour ${change(cheaper.spending / now.spending - 1)},
+labour share ${pct(now.labourShare)} → ${pct(cheaper.labourShare)}.</p>`
+```
+
+:::
+
+::: {.sim-output}
+
+```{ojs}
+//| echo: false
+{
+  const blue = "#2a78d6", orange = "#eb6834"
+  const f = (L, K) => cesKL(K, L, sigma, alpha)
+  const max = Math.max(3, 1.2 * Math.max(now.L, now.K, pinned?.L ?? 0, pinned?.K ?? 0))
+  const curve = isoquant(1, f, 4 * max).map(d => ({L: d.x1, K: d.x2}))
+  const pinnedCurve = pinned ? isoquant(1, (L, K) => cesKL(K, L, pinned.sigma, pinned.alpha), 4 * max).map(d => ({L: d.x1, K: d.x2})) : []
+  // The isocost line through a chosen point, with slope -w / r.
+  const isocost = d => {
+    const cost = d.L + d.priceRatio * d.K        // in units of the wage
+    return [{L: 0, K: cost / d.priceRatio}, {L: cost, K: 0}]
+  }
+  const shareCurve = d3.range(Math.log(0.25), Math.log(4) + 1e-9, 0.01).map(Math.exp)
+    .map(priceRatio => ({priceRatio, labourShare: factorChoice(sigma, alpha, priceRatio).labourShare}))
+
+  const isoquantChart = Plot.plot({
+    width: 460, height: 460,
+    x: {label: "Labour, L", domain: [0, max], ticks: 4},
+    y: {label: "Capital, K", domain: [0, max], ticks: 4},
+    color: {legend: true, domain: ["isoquant, Y = 1", "isocost line"], range: [blue, orange]},
+    marks: [
+      Plot.ruleX([0]), Plot.ruleY([0]),
+      pinned ? Plot.line(pinnedCurve, {x: "L", y: "K", stroke: "currentColor", strokeOpacity: 0.4, strokeDasharray: "5,4", clip: true}) : null,
+      pinned ? Plot.line(isocost(pinned), {x: "L", y: "K", stroke: "currentColor", strokeOpacity: 0.4, strokeDasharray: "5,4", clip: true}) : null,
+      pinned ? Plot.dot([pinned], {x: "L", y: "K", stroke: "currentColor", strokeOpacity: 0.6, r: 5}) : null,
+      Plot.line(isocost(now), {x: "L", y: "K", stroke: () => "isocost line", strokeWidth: 1.5, clip: true}),
+      Plot.line(curve, {x: "L", y: "K", stroke: () => "isoquant, Y = 1", strokeWidth: 2.5, clip: true}),
+      Plot.dot([now], {x: "L", y: "K", fill: "currentColor", r: 5}),
+      Plot.text([now], {x: "L", y: "K", text: () => "lowest cost", textAnchor: "start", dx: 9, dy: -9})
+    ]
+  })
+
+  const shareChart = Plot.plot({
+    width: 460, height: 460,
+    x: {label: "Price of capital relative to wage, r/w (log scale)", type: "log", domain: [0.25, 4], ticks: [0.25, 0.5, 1, 2, 4], tickFormat: d => d},
+    y: {label: "Labour share, %", domain: [0, 100]},
+    marks: [
+      Plot.ruleY([0]),
+      Plot.ruleY([100 * (1 - alpha)], {strokeDasharray: "3,3", strokeOpacity: 0.6}),
+      // Label the Cobb-Douglas line just below it, at the end where the curve is
+      // above the line: the left end if sigma < 1, the right end if sigma > 1.
+      Plot.text([100 * (1 - alpha)], {
+        x: sigma > 1 ? 4 : 0.25, y: d => d, text: () => "Cobb-Douglas, σ = 1: 1 − α",
+        textAnchor: sigma > 1 ? "end" : "start", dx: sigma > 1 ? -4 : 4, dy: 12, fillOpacity: 0.7
+      }),
+      Plot.line(shareCurve, {x: "priceRatio", y: d => 100 * d.labourShare, stroke: blue, strokeWidth: 2.5}),
+      pinned ? Plot.dot([pinned], {x: "priceRatio", y: d => 100 * d.labourShare, stroke: "currentColor", strokeOpacity: 0.6, r: 5}) : null,
+      Plot.dot([now], {x: "priceRatio", y: d => 100 * d.labourShare, fill: "currentColor", r: 5})
+    ]
+  })
+
+  return html`<div class="sim-grid">
+    <div><strong>Cheapest way to produce one unit of output</strong>${isoquantChart}</div>
+    <div><strong>Labour share and the price of capital, at σ = ${sigma.toFixed(2)}</strong>${shareChart}</div>
+  </div>`
+}
+```
+
+:::
+
+:::

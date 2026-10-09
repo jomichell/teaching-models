@@ -19,8 +19,10 @@ cobb-douglas/    Cobb-Douglas production function
   cost.qmd       isocost lines, cost minimisation and factor shares
   _*.qmd         controls shared by the two pages
   cobb-douglas.js   JavaScript implementation, imported by the pages
-ces/             CES production and weak links, after Jones (2026) (one page)
-  ces.js         JavaScript implementation, imported by the page
+ces/             CES production functions
+  index.qmd      weak links, after Jones (2026)
+  shares.qmd     the elasticity of substitution and factor shares
+  ces.js         JavaScript implementation, imported by the pages
 markup/          markup pricing and the wage share (one page)
 solow/           one directory per model
   index.qmd      interactive page (Observable JS): constant technology
