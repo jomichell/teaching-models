@@ -1,0 +1,227 @@
+---
+title: "CES production and weak links"
+page-layout: full
+toc: false
+---
+
+This page explores the production function in Charles Jones's essay
+*AI and Our Economic Future* (*Journal of
+Economic Perspectives*, 2026). Output is produced by combining two tasks: an
+"easy" task, $X_{easy}$, which AI can automate, and a "hard" task, $X_{hard}$,
+which it cannot. How much output gains when the easy task becomes abundant
+depends on how easily one task can stand in for the other: the *elasticity of
+substitution*, $\sigma$.
+
+## Different elasticities of substitution
+
+A CES (constant elasticity of substitution) production function with two equally
+weighted inputs is
+
+$$
+Y = \left( \tfrac{1}{2} X_{easy}^{\rho} + \tfrac{1}{2} X_{hard}^{\rho} \right)^{1/\rho},
+\qquad \rho = \frac{\sigma - 1}{\sigma} .
+$$
+
+Output is a kind of average of the two inputs, and $\sigma$ sets which kind.^[With
+the weights of $\tfrac{1}{2}$, $Y$ is a *power mean* of the inputs, and doubling
+both inputs doubles output. Jones writes the function without the weights, which
+changes the level of output but not the shape of the isoquants.]
+
+- $\sigma \to \infty$: perfect substitutes. $Y$ is the arithmetic mean, and the
+  isoquants are straight lines.
+- $\sigma = 1$: Cobb-Douglas. $Y$ is the geometric mean,
+  $\sqrt{X_{easy} X_{hard}}$.
+- $\sigma = \tfrac{1}{2}$: $Y$ is the harmonic mean, the case Jones uses.
+- $\sigma \to 0$: perfect complements (Leontief). $Y$ is the smaller of the two
+  inputs, and the isoquants are L-shaped.
+
+With $\sigma < 1$ both tasks are essential and output is held back by the scarcer
+one, the *weak link*. The right-hand chart shows this directly: it holds the hard
+task at $X_{hard} = 1$ and lets the easy task grow. Below $\sigma = 1$, output
+levels off however much of the easy task there is.
+
+::: {.sim-layout .column-screen-inset}
+
+::: {.sim-controls}
+
+```{ojs}
+//| echo: false
+import { ces, weakLink, isoquant } from "./ces.js"
+
+viewof sigma = Inputs.range([0.05, 20], {
+  value: 0.5, transform: Math.log, step: 0.01, label: "Elasticity of substitution, σ"
+})
+```
+
+```{ojs}
+//| echo: false
+rho = (sigma - 1) / sigma
+f = (x1, x2) => ces(x1, x2, sigma)
+
+kind = Math.abs(sigma - 1) < 0.02 ? "Cobb-Douglas: the geometric mean"
+  : Math.abs(sigma - 0.5) < 0.01 ? "the harmonic mean, as in Jones"
+  : sigma < 0.15 ? "close to perfect complements (Leontief)"
+  : sigma > 10 ? "close to perfect substitutes"
+  : sigma < 1 ? "the inputs are complements: weak links matter"
+  : "the inputs are substitutes"
+
+// With X_hard = 1, output as X_easy becomes unlimited: 2^(sigma / (1 - sigma)) if
+// sigma < 1, and unbounded otherwise.
+ceiling = sigma < 1 ? 2 ** (sigma / (1 - sigma)) : Infinity
+
+cesMax = 10
+cesLevels = d3.range(1, 10)
+cesIsoquants = cesLevels.flatMap(y => isoquant(y, f, 4 * cesMax).map(d => ({y, ...d})))
+
+logTicks = [0.1, 1, 10, 100, 1000]
+easyRange = d3.range(-1, 3.0001, 0.02).map(e => 10 ** e)   // 0.1 to 1000, log spaced
+easyPath = easyRange.map(easy => ({easy, Y: f(easy, 1)}))
+```
+
+```{ojs}
+//| echo: false
+html`<p>σ = ${sigma.toFixed(2)}, so ρ = ${rho.toFixed(2)}: ${kind}.</p>
+<p>With X<sub>hard</sub> = 1, ${Number.isFinite(ceiling)
+  ? html`output can never exceed ${ceiling.toFixed(2)}, however large X<sub>easy</sub> becomes.`
+  : html`output grows without limit as X<sub>easy</sub> rises.`}</p>`
+```
+
+:::
+
+::: {.sim-output}
+
+```{ojs}
+//| echo: false
+html`<div class="sim-grid">
+  <div><strong>Isoquants</strong>${Plot.plot({
+    width: 460,
+    height: 460,
+    x: {label: "Easy task, X_easy", domain: [0, cesMax]},
+    y: {label: "Hard task, X_hard", domain: [0, cesMax]},
+    marks: [
+      Plot.ruleX([0]),
+      Plot.ruleY([0]),
+      Plot.line([{x: 0, y: 0}, {x: cesMax, y: cesMax}], {x: "x", y: "y", strokeOpacity: 0.15}),
+      Plot.line(cesIsoquants, {x: "x1", y: "x2", z: "y", stroke: "#4269d0", clip: true}),
+      // Each isoquant crosses the 45-degree line at X_easy = X_hard = Y.
+      Plot.text(cesLevels.filter(y => y <= 8), {x: d => d, y: d => d, text: d => `Y = ${d}`, textAnchor: "start", dx: 6, dy: -8})
+    ]
+  })}</div>
+  <div><strong>Output as the easy task grows, with X<sub>hard</sub> = 1</strong>${Plot.plot({
+    width: 460,
+    height: 460,
+    x: {label: "Easy task, X_easy (log scale)", type: "log", domain: [0.1, 1000], ticks: logTicks, tickFormat: d => d},
+    y: {label: "Output, Y", domain: [0, 10]},
+    marks: [
+      Plot.ruleY([0]),
+      Number.isFinite(ceiling) ? Plot.ruleY([ceiling], {strokeDasharray: "3,3", strokeOpacity: 0.6}) : null,
+      Plot.line(easyPath, {x: "easy", y: "Y", stroke: "#4269d0", strokeWidth: 2, clip: true}),
+      Plot.dot([{easy: 1, Y: 1}], {x: "easy", y: "Y", fill: "currentColor", r: 4}),
+      Plot.text([{easy: 1, Y: 1}], {x: "easy", y: "Y", text: () => "X_easy = X_hard", textAnchor: "start", dx: 8, dy: 10})
+    ]
+  })}</div>
+</div>`
+```
+
+:::
+
+:::
+
+## Weak links with σ = 1/2
+
+Jones simplifies by setting $\sigma = \tfrac{1}{2}$, which gives
+
+$$
+\frac{1}{Y} = \frac{1}{X_{easy}} + \frac{1}{X_{hard}} .
+$$
+
+Output is always less than the smaller input, and however large $X_{easy}$
+becomes, output can never exceed $X_{hard}$. On the left, the isoquant through
+the chosen inputs runs alongside the dashed lines $X_{easy} = Y$ and
+$X_{hard} = Y$ without ever reaching them (both axes use a log scale, so that the
+full range of inputs fits). Use the sliders to change the
+amounts of the two tasks. Adding more of the abundant task does little; adding
+more of the scarce one does a lot.
+
+With competitive markets, the share of spending that goes on the easy task is
+$s = Y / X_{easy}$. If the easy task were automated so completely that
+$X_{easy}$ became infinite, output would rise to $X_{hard}$, a factor of
+$1 / (1 - s)$. This is the formula Jones uses to argue that automating software,
+around 2 percent of GDP, would raise GDP by only around 2 percent.
+
+::: {.sim-layout .column-screen-inset}
+
+::: {.sim-controls}
+
+```{ojs}
+//| echo: false
+viewof easy = Inputs.range([0.1, 1000], {value: 4, transform: Math.log, step: 0.1, label: "Easy task, X_easy"})
+viewof hard = Inputs.range([0.1, 10], {value: 1, step: 0.1, label: "Hard task, X_hard"})
+```
+
+```{ojs}
+//| echo: false
+Y = weakLink(easy, hard)
+share = Y / easy                        // spending share of the easy task
+gain = 1 / (1 - share)                  // output with infinite X_easy, relative to now
+fromEasy = weakLink(2 * easy, hard) / Y - 1
+fromHard = weakLink(easy, 2 * hard) / Y - 1
+
+// Drawn on log scales, so that inputs from 0.1 to 1000 fit on one chart.
+wlIsoquant = isoquant(Y, weakLink, 1e4, 4000).filter(d => d.x1 >= 0.1 && d.x2 >= 0.1)
+
+wlPath = d3.range(-1, 3.0001, 0.02).map(e => 10 ** e).map(x => ({easy: x, Y: weakLink(x, hard)}))
+```
+
+```{ojs}
+//| echo: false
+html`<p>Output Y = ${Y.toFixed(3)}, which is ${(100 * Y / hard).toFixed(1)}% of X<sub>hard</sub>.</p>
+<p>Doubling X<sub>easy</sub> would raise output by ${(100 * fromEasy).toFixed(1)}%;
+doubling X<sub>hard</sub> would raise it by ${(100 * fromHard).toFixed(1)}%.</p>
+<p>Spending share of the easy task: s = ${(100 * share).toFixed(1)}%.
+With unlimited X<sub>easy</sub>, output would rise by a factor of
+1 / (1 − s) = ${gain.toFixed(3)}, to ${hard.toFixed(2)}.</p>`
+```
+
+:::
+
+::: {.sim-output}
+
+```{ojs}
+//| echo: false
+html`<div class="sim-grid">
+  <div><strong>Isoquant through the chosen inputs</strong>${Plot.plot({
+    width: 460,
+    height: 460,
+    x: {label: "Easy task, X_easy (log scale)", type: "log", domain: [0.1, 1000], ticks: logTicks, tickFormat: d => d},
+    y: {label: "Hard task, X_hard (log scale)", type: "log", domain: [0.1, 1000], ticks: logTicks, tickFormat: d => d},
+    marks: [
+      // The isoquant approaches X_easy = Y and X_hard = Y but never reaches them.
+      Plot.ruleX([Y], {strokeDasharray: "3,3", strokeOpacity: 0.6}),
+      Plot.ruleY([Y], {strokeDasharray: "3,3", strokeOpacity: 0.6}),
+      Plot.line(wlIsoquant, {x: "x1", y: "x2", stroke: "#4269d0", strokeWidth: 2, clip: true}),
+      Plot.dot([{easy, hard}], {x: "easy", y: "hard", fill: "currentColor", r: 5}),
+      // The label goes on whichever side of the point has room.
+      Plot.text([{easy, hard}], {x: "easy", y: "hard", text: () => `Y = ${Y.toFixed(2)}`,
+        textAnchor: easy > 100 ? "end" : "start", dx: easy > 100 ? -9 : 9, dy: -9})
+    ]
+  })}</div>
+  <div><strong>Output as the easy task grows, with X<sub>hard</sub> = ${hard.toFixed(1)}</strong>${Plot.plot({
+    width: 460,
+    height: 460,
+    x: {label: "Easy task, X_easy (log scale)", type: "log", domain: [0.1, 1000], ticks: logTicks, tickFormat: d => d},
+    y: {label: "Output, Y", domain: [0, Math.max(1, 1.15 * hard)]},
+    marks: [
+      Plot.ruleY([0]),
+      Plot.ruleY([hard], {strokeDasharray: "3,3", strokeOpacity: 0.6}),
+      Plot.text([hard], {x: 0.1, y: d => d, text: () => "ceiling: Y = X_hard", textAnchor: "start", dx: 4, dy: -8}),
+      Plot.line(wlPath, {x: "easy", y: "Y", stroke: "#4269d0", strokeWidth: 2}),
+      Plot.dot([{easy, Y}], {x: "easy", y: "Y", fill: "currentColor", r: 5})
+    ]
+  })}</div>
+</div>`
+```
+
+:::
+
+:::

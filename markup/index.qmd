@@ -1,0 +1,137 @@
+---
+title: "Markups and the wage share"
+page-layout: full
+toc: false
+---
+
+Firms set their price as a markup, $\mu$, on unit labour cost. With labour
+productivity $\lambda$ (output per worker) and nominal wage $w$, unit labour
+cost is $w / \lambda$, so
+
+$$
+p = (1 + \mu) \frac{w}{\lambda}
+\qquad \text{and so} \qquad
+\frac{w}{p} = \frac{\lambda}{1 + \mu} .
+$$
+
+This is the *markup line*: the real wage implied by firms' pricing. Output is
+$\overline{Y} = \lambda L$, where $L$ is employment, and it is divided between
+real wage income, $\overline{WB} = (w/p) L$, and real profit income,
+$\overline{\Pi} = (\lambda - w/p) L$. The wage share of output is
+
+$$
+\frac{\overline{WB}}{\overline{Y}} = \frac{w/p}{\lambda} = \frac{1}{1 + \mu} ,
+$$
+
+so it depends only on the markup. Changing productivity or employment changes
+the size of the two rectangles, but not how output is split between them.
+The idea is Michał Kalecki's "degree of monopoly" (1930s).
+
+Press **Pin these lines** to keep the current diagram as dashed lines, then change
+the sliders to compare. For example, pin with a markup of 25%, then raise it to
+60%: the real wage falls, and the wage share falls from 80% to 62.5%, with
+productivity and employment unchanged.
+
+::: {.sim-layout}
+
+::: {.sim-controls}
+
+```{ojs}
+//| echo: false
+viewof lambda = Inputs.range([0.5, 2], {value: 1, step: 0.05, label: "Productivity, λ"})
+viewof mu = Inputs.range([0, 1], {value: 0.25, step: 0.01, label: "Markup, μ"})
+viewof L = Inputs.range([0, 100], {value: 60, step: 1, label: "Employment, L"})
+```
+
+```{ojs}
+//| echo: false
+// Outcomes for productivity lam, markup m and employment l.
+function outcomes(lam, m, l) {
+  const realWage = lam / (1 + m)
+  return {lambda: lam, mu: m, L: l, realWage, output: lam * l, wages: realWage * l,
+    profits: (lam - realWage) * l, wageShare: 1 / (1 + m)}
+}
+now = outcomes(lambda, mu, L)
+
+// The pinned diagram, if any, kept until it is cleared.
+mutable pinned = null
+```
+
+```{ojs}
+//| echo: false
+html`<p>${Object.assign(html`<button class="btn btn-sm btn-outline-primary">Pin these lines</button>`, {onclick: () => { mutable pinned = now }})}
+${Object.assign(html`<button class="btn btn-sm btn-outline-secondary">Clear</button>`, {onclick: () => { mutable pinned = null }})}</p>`
+```
+
+```{ojs}
+//| echo: false
+pct = x => `${(100 * x).toFixed(1)}%`
+// One row of the readout: the current value, and the pinned value if there is one.
+row = (label, key, format = x => x.toFixed(2)) => html`<tr><td>${label}</td>
+  <td style="text-align:right">${format(now[key])}</td>
+  ${pinned ? html`<td style="text-align:right; opacity:0.6">${format(pinned[key])}</td>` : ""}</tr>`
+
+html`<table class="table table-sm" style="font-size: 0.9em">
+  <thead><tr><th></th><th style="text-align:right">now</th>${pinned ? html`<th style="text-align:right; opacity:0.6">pinned</th>` : ""}</tr></thead>
+  <tbody>
+    ${row("Real wage, w/p", "realWage")}
+    ${row("Output, λL", "output", x => x.toFixed(1))}
+    ${row("Real wage income", "wages", x => x.toFixed(1))}
+    ${row("Real profit income", "profits", x => x.toFixed(1))}
+    ${row("Wage share", "wageShare", pct)}
+    ${row("Profit share", "wageShare", x => pct(1 - x))}
+  </tbody>
+</table>`
+```
+
+:::
+
+::: {.sim-output}
+
+```{ojs}
+//| echo: false
+{
+  const blue = "#2a78d6"
+  const yMax = 2.2, xMax = 100
+  // Labels just left of the vertical axis, in place of tick marks.
+  const axisLabels = [{y: now.lambda, text: "λ"}, {y: now.realWage, text: "w/p"}]
+  return Plot.plot({
+    width: 620,
+    height: 460,
+    marginLeft: 50,
+    x: {label: "Employment, L", domain: [0, xMax], ticks: []},
+    y: {label: null, domain: [0, yMax], ticks: []},
+    marks: [
+      // Real wage income and real profit income.
+      Plot.rect([now], {x1: 0, x2: "L", y1: 0, y2: "realWage", fill: blue, fillOpacity: 0.18}),
+      Plot.rect([now], {x1: 0, x2: "L", y1: "realWage", y2: "lambda", fill: blue, fillOpacity: 0.4}),
+      // The pinned diagram, dashed.
+      pinned ? Plot.ruleY([pinned.lambda, pinned.realWage], {stroke: "currentColor", strokeOpacity: 0.5, strokeDasharray: "5,4"}) : null,
+      pinned ? Plot.ruleX([pinned.L], {y1: 0, y2: pinned.lambda, stroke: "currentColor", strokeOpacity: 0.5, strokeDasharray: "5,4"}) : null,
+      pinned ? Plot.text([{y: pinned.lambda, text: "pinned λ"}, {y: pinned.realWage, text: "pinned w/p"}], {
+        x: xMax, y: "y", text: "text", textAnchor: "end", dy: 10, fillOpacity: 0.5
+      }) : null,
+      // Productivity and the markup line.
+      Plot.ruleY([now.lambda, now.realWage], {stroke: blue, strokeWidth: 2}),
+      Plot.text([{y: now.lambda, text: "productivity"}, {y: now.realWage, text: "markup line"}], {
+        x: xMax, y: "y", text: "text", textAnchor: "end", dy: -9, fillOpacity: 0.7
+      }),
+      Plot.text(axisLabels, {x: 0, y: "y", text: "text", textAnchor: "end", dx: -8, fontSize: 14}),
+      Plot.text([now], {x: "L", y: 0, text: () => "L", dy: 14, fontSize: 14}),
+      // Name each rectangle when it is big enough to hold the label.
+      now.L > 30 && now.lambda - now.realWage > 0.15
+        ? Plot.text([now], {x: d => d.L / 2, y: d => (d.lambda + d.realWage) / 2, text: () => "real profit income, (λ − w/p)L"})
+        : null,
+      now.L > 30 && now.realWage > 0.15
+        ? Plot.text([now], {x: d => d.L / 2, y: d => d.realWage / 2, text: () => "real wage income, (w/p)L"})
+        : null,
+      Plot.ruleX([0]),
+      Plot.ruleY([0])
+    ]
+  })
+}
+```
+
+:::
+
+:::
