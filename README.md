@@ -10,7 +10,8 @@ rebuilt and deployed by GitHub Actions on every push to `main`.
 
 ```
 _quarto.yml      website configuration
-index.qmd        site home page
+index.qmd        site home page: the index of models, grouped by subject
+etp.qmd          guide for students on the ETP module, in the order the module uses the models
 styles.css       shared page styles (e.g. the controls-beside-output layout)
 pyproject.toml   Python dependencies (managed with uv)
 js/              JavaScript helpers shared between pages (e.g. the play/pause scrubber)
@@ -52,4 +53,5 @@ Rscript solow/solow.R       # R: save the transition path plot (needs ggplot2)
 ## Adding a model
 
 1. Create a directory `<model>/` with the prototype and, for an interactive page, an `index.qmd`.
-2. Add the page to the navbar menu in `_quarto.yml` and the list in `index.qmd`.
+2. Add the page to the navbar menu in `_quarto.yml` and the list in `index.qmd`, and to
+   `etp.qmd` if the ETP module uses it.

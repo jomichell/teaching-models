@@ -1,0 +1,80 @@
+---
+title: "A guide for ETP students"
+toc: false
+---
+
+These models go with the first topic of Economic Theory and Policy:
+**technology, automation, work and distribution**. The topic asks two questions:
+
+- Does AI end the era of stagnation, or intensify the forces behind it?
+- What does it mean for workers, and for the distribution of income?
+
+The models don't answer these questions. They let you see how the theories behind
+the answers work: change a parameter and watch what happens to growth, to the
+labour share or to output. Use them alongside the lectures, the workshop sheets
+and the readings, not instead of them.
+
+The models are listed below in the order you meet them in the module. Remember
+that each workshop discusses the previous week's lecture.
+
+## Week 1: growth and the stylised facts
+
+Lecture 1 set out five stylised facts, among them a falling labour share and a
+productivity slowdown. It used the Solow model to split productivity growth into
+capital deepening and TFP, and Workshop 1 asked what the model's main results are,
+and how Moll and Imas add automation to it.
+
+- Solow growth model, in four steps:
+  1. [constant technology](solow/index.qmd): the steady state, and why diminishing
+     returns stop capital accumulation from driving growth for ever
+  2. [an investment rate shock](solow/shock.qmd): a higher investment (saving) rate
+     raises the level of output per worker, not its long-run growth
+  3. [growing technology](solow/effective.qmd): in the steady state, output per
+     worker grows at the rate of technical progress
+  4. [growing technology, with an investment rate shock](solow/effective-shock.qmd)
+
+## Weeks 2 and 3: who gets what, and why
+
+Lecture 2 looked at explanations of the falling labour share, and at two theories
+of distribution: marginal productivity, and Kalecki's markup. Workshop 2 followed
+up Workshop 1 with isoquants and automation, and had exercises on the markup and
+the wage share. Workshop 3 had exercises on markups and the elasticity of
+substitution.
+
+**Marginal productivity.** In the Moll and Imas model, automation raises the
+exponent on capital in a Cobb-Douglas production function. These pages show what
+that does to the isoquants, and why with Cobb-Douglas the factor shares are fixed
+by the exponents, whatever happens to wages and the price of capital.
+
+- Cobb-Douglas production function, in two steps:
+  1. [isoquants](cobb-douglas/index.qmd)
+  2. [cost minimisation and factor shares](cobb-douglas/cost.qmd)
+
+**Cheaper capital.** The first explanation in Lecture 2: the price of investment
+goods has fallen, so firms use more capital per worker. Whether that lowers the
+labour share depends on the elasticity of substitution, $\sigma$: the supermarket
+tills against the delivery lorries. Try values of $\sigma$ above and below one,
+and compare with the estimates in the lecture, most of which are below one.
+
+- [CES production, the elasticity of substitution and factor shares](ces/shares.qmd)
+
+**Markups.** Kalecki's alternative: firms set prices as a markup on unit labour
+cost, and the markup, not technology, sets the wage share. This is the markup
+diagram from Lectures 1 and 2, and you can use it to check your answers to the
+Workshop 2 markup exercise.
+
+- [Markups and the wage share](markup/index.qmd)
+
+The two theories are not compatible. In the Solow and Cobb-Douglas pages the wage
+share is set by technology; on the markup page it is set by firms' pricing power.
+Keep the difference in mind: the two theories suggest very different policies.
+
+## Week 4: AI and growth
+
+Lecture 4 asked how much AI will add to growth, and set Acemoglu's arithmetic
+against Jones's weak links. If tasks are complements ($\sigma < 1$, as in Lecture
+2), output is held back by the tasks that cannot be automated, like a chain by its
+weakest link. This page follows Jones (2026), *AI and Our Economic Future*, which
+is also one of the papers for the presentations.
+
+- [CES production and weak links](ces/index.qmd)
